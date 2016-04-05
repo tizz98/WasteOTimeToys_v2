@@ -24,6 +24,7 @@ Public Class frmToys
     Private Const COL_MIN_QTY As String = "T"
     Private Const COL_AVG_QTY As String = "U"
     Private Const COL_MAX_QTY As String = "V"
+    Private Const COL_AGG_TITLES As String = "E"
 
     ' As Integers
     Private INT_COL_FIRST_NAME As Integer = ColumnLetterToColumnIndex(COL_FIRST_NAME)
@@ -46,6 +47,7 @@ Public Class frmToys
     Private INT_COL_MIN_QTY As Integer = ColumnLetterToColumnIndex(COL_MIN_QTY)
     Private INT_COL_AVG_QTY As Integer = ColumnLetterToColumnIndex(COL_AVG_QTY)
     Private INT_COL_MAX_QTY As Integer = ColumnLetterToColumnIndex(COL_MAX_QTY)
+    Private INT_COL_AGG_TITLES As String = ColumnLetterToColumnIndex(COL_AGG_TITLES)
 
     Private Const STARTING_ROW As Integer = 1
 
@@ -58,8 +60,9 @@ Public Class frmToys
     Private Const FORMULA_MIN_QTY As String = "=min(" & COL_GAMES_QTY & "{0}.." & COL_MODEL_QTY & "{0})"
     Private Const FORMULA_AVG_QTY As String = "=average(" & COL_GAMES_QTY & "{0}.." & COL_MODEL_QTY & "{0})"
     Private Const FORMULA_MAX_QTY As String = "=max(" & COL_GAMES_QTY & "{0}.." & COL_MODEL_QTY & "{0})"
+    Private Const FORMULA_AGGREGATE As String = "({0}{1}..{0}{2})"
 
-    Private maxRowWithData As Integer = STARTING_ROW
+    Private maxRowWithData As Integer = STARTING_ROW + 1  ' in case no data
 
     Private Sub btnMagic_Click(sender As Object, e As EventArgs) Handles btnMagic.Click
         Dim checkExcel As Object
@@ -87,10 +90,7 @@ Public Class frmToys
 
         writeHeaders(excelDoc)
         writeEmployees(excelDoc, employees)
-
-        ' example
-        ' excelDoc.Cells(row, col) = 123
-        ' excelDoc.Cells(row, col) = '=average(a1...a5)'
+        writeAggregateRows(excelDoc)
 
         MessageBox.Show("Pausing...")
         excelDoc.Quit()
@@ -132,7 +132,7 @@ Public Class frmToys
             empl = employees(idx)
 
             writeEmployee(row, excelDoc, empl)
-            maxRowWithData = idx
+            maxRowWithData = row
         Next
     End Sub
 
@@ -161,6 +161,39 @@ Public Class frmToys
         excelDoc.Cells(row, INT_COL_MIN_QTY) = String.Format(FORMULA_MIN_QTY, row)
         excelDoc.Cells(row, INT_COL_AVG_QTY) = String.Format(FORMULA_AVG_QTY, row)
         excelDoc.Cells(row, INT_COL_MAX_QTY) = String.Format(FORMULA_MAX_QTY, row)
+    End Sub
+
+    Private Sub writeAggregateRows(ByRef excelDoc As Excel.Application)
+        Dim FIRST_ROW As Integer = maxRowWithData + 2  ' 1 for next line, 1 for blank line
+        Dim FIRST_DATA_ROW As Integer = STARTING_ROW + 1
+        Dim functions As String() = {"sum", "max", "average", "min"}
+        Dim names As String() = {"Total", "Max", "Avg", "Min"}
+        Dim formula As String
+        Dim formulaRow As Integer
+
+        For idx As Integer = 0 To functions.Length - 1
+            formulaRow = FIRST_ROW + idx
+            formula = String.Format("=" & functions(idx) & FORMULA_AGGREGATE, "{0}", FIRST_DATA_ROW, maxRowWithData)
+
+            'excelDoc.Cells(formulaRow, INT_COL_AGG_TITLES) = names(idx)
+            excelDoc.Cells(formulaRow, INT_COL_GAME_SALES) = String.Format(formula, COL_GAME_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_DOLL_SALES) = String.Format(formula, COL_DOLL_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_BUILD_SALES) = String.Format(formula, COL_BUILD_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_MODEL_SALES) = String.Format(formula, COL_MODEL_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_TOTAL_SALES) = String.Format(formula, COL_TOTAL_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_MIN_SALES) = String.Format(formula, COL_MIN_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_AVG_SALES) = String.Format(formula, COL_AVG_SALES)
+            excelDoc.Cells(formulaRow, INT_COL_MAX_SALES) = String.Format(formula, COL_MAX_SALES)
+
+            excelDoc.Cells(formulaRow, INT_COL_GAMES_QTY) = String.Format(formula, COL_GAMES_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_DOLLS_QTY) = String.Format(formula, COL_DOLLS_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_BUILD_QTY) = String.Format(formula, COL_BUILD_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_MODEL_QTY) = String.Format(formula, COL_MODEL_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_TOTAL_QTY) = String.Format(formula, COL_TOTAL_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_MIN_QTY) = String.Format(formula, COL_MIN_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_AVG_QTY) = String.Format(formula, COL_AVG_QTY)
+            excelDoc.Cells(formulaRow, INT_COL_MAX_QTY) = String.Format(formula, COL_MAX_QTY)
+        Next
     End Sub
 
     Private Shared Function ColumnLetterToColumnIndex(columnLetter As String) As Integer
