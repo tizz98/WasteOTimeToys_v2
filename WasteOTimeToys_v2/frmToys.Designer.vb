@@ -41,6 +41,9 @@ Partial Class frmToys
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(284, 262)
         Me.Controls.Add(Me.btnMagic)
+        Me.MaximizeBox = False
+        Me.MaximumSize = New System.Drawing.Size(300, 300)
+        Me.MinimumSize = New System.Drawing.Size(300, 300)
         Me.Name = "frmToys"
         Me.Text = "Waste O Time Toys v2"
         Me.ResumeLayout(False)
