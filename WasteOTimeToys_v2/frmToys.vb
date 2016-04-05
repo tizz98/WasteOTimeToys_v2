@@ -47,7 +47,7 @@ Public Class frmToys
     Private INT_COL_MIN_QTY As Integer = ColumnLetterToColumnIndex(COL_MIN_QTY)
     Private INT_COL_AVG_QTY As Integer = ColumnLetterToColumnIndex(COL_AVG_QTY)
     Private INT_COL_MAX_QTY As Integer = ColumnLetterToColumnIndex(COL_MAX_QTY)
-    Private INT_COL_AGG_TITLES As String = ColumnLetterToColumnIndex(COL_AGG_TITLES)
+    Private INT_COL_AGG_TITLES As Integer = ColumnLetterToColumnIndex(COL_AGG_TITLES)
 
     Private Const STARTING_ROW As Integer = 1
 
@@ -83,7 +83,8 @@ Public Class frmToys
         Else
             excelDoc = checkExcel
         End If
-        excelDoc.Visible = True
+
+        MessageBox.Show("Generating spreadsheet...")
 
         excelDoc.Workbooks.Add()
         excelDoc.Sheets.Add()
@@ -91,6 +92,7 @@ Public Class frmToys
         writeHeaders(excelDoc)
         writeEmployees(excelDoc, employees)
         writeAggregateRows(excelDoc)
+        excelDoc.Visible = True
 
         MessageBox.Show("Pausing...")
         excelDoc.Quit()
@@ -175,7 +177,7 @@ Public Class frmToys
             formulaRow = FIRST_ROW + idx
             formula = String.Format("=" & functions(idx) & FORMULA_AGGREGATE, "{0}", FIRST_DATA_ROW, maxRowWithData)
 
-            'excelDoc.Cells(formulaRow, INT_COL_AGG_TITLES) = names(idx)
+            excelDoc.Cells(formulaRow, INT_COL_AGG_TITLES) = names(idx) & ":"
             excelDoc.Cells(formulaRow, INT_COL_GAME_SALES) = String.Format(formula, COL_GAME_SALES)
             excelDoc.Cells(formulaRow, INT_COL_DOLL_SALES) = String.Format(formula, COL_DOLL_SALES)
             excelDoc.Cells(formulaRow, INT_COL_BUILD_SALES) = String.Format(formula, COL_BUILD_SALES)
