@@ -1,4 +1,24 @@
-﻿Imports Microsoft.Office.Interop
+﻿'------------------------------------------------------------
+'-                  File Name: frmToys.vb                   -
+'-                 Part of Project: Assign9                 -
+'------------------------------------------------------------
+'-                Written By: Elijah Wilson                 -
+'-                  Written On: 04/05/2016                  -
+'------------------------------------------------------------
+'- File Purpose:                                            -
+'-                                                          -
+'- This is the main form for the application. It handles    -
+'- all of the form funtionality for the program.            -
+'------------------------------------------------------------
+'- Program Purpose:                                         -
+'-                                                          -
+'- To generate an Excel spreadsheet based on the input data -
+'- file with many statistics.                               -
+'------------------------------------------------------------
+'- Global Variable Dictionary (alphabetically):             -
+'- (None)                                                   -
+'------------------------------------------------------------
+Imports Microsoft.Office.Interop
 
 Public Class frmToys
     Private Const FILE_NAME As String = "ToyOrder.txt"
@@ -64,6 +84,30 @@ Public Class frmToys
 
     Private maxRowWithData As Integer = STARTING_ROW + 1  ' in case no data
 
+    '------------------------------------------------------------
+    '-             Subprogram Name: btnMagic_Click              -
+    '------------------------------------------------------------
+    '-                Written By: Elijah Wilson                 -
+    '-                  Written On: 04/05/2016                  -
+    '------------------------------------------------------------
+    '- Subprogram Purpose:                                      -
+    '-                                                          -
+    '- Handles when the main button is clicked. Parses the      -
+    '- input file and generates the excel report.               -
+    '------------------------------------------------------------
+    '- Parameter Dictionary (in parameter order):               -
+    '- sender - The object that raised the event                -
+    '- e - The EventArgs sent with the event                    -
+    '------------------------------------------------------------
+    '- Local Variable Dictionary (alphabetically):              -
+    '- checkExcel - Possibly an Excel.Application if one        -
+    '-              already exists                              -
+    '- employees - A List of Employees that were parsed from    -
+    '-             the input file                               -
+    '- excelDoc - The Excel.Application object that is the main -
+    '-            driver for the application                    -
+    '- parser - A Parser object that parses the input file      -
+    '------------------------------------------------------------
     Private Sub btnMagic_Click(sender As Object, e As EventArgs) Handles btnMagic.Click
         Dim checkExcel As Object
         Dim excelDoc As Excel.Application
@@ -99,6 +143,23 @@ Public Class frmToys
         excelDoc = Nothing
     End Sub
 
+    '------------------------------------------------------------
+    '-              Subprogram Name: writeHeaders               -
+    '------------------------------------------------------------
+    '-                Written By: Elijah Wilson                 -
+    '-                  Written On: 04/05/2016                  -
+    '------------------------------------------------------------
+    '- Subprogram Purpose:                                      -
+    '-                                                          -
+    '- Writes the Column headers to the excel spreadsheet       -
+    '------------------------------------------------------------
+    '- Parameter Dictionary (in parameter order):               -
+    '- excelDoc - The Excel.Application to be used within the   -
+    '-            Subroutine                                    -
+    '------------------------------------------------------------
+    '- Local Variable Dictionary (alphabetically):              -
+    '- (None)                                                   -
+    '------------------------------------------------------------
     Private Sub writeHeaders(ByRef excelDoc As Excel.Application)
         excelDoc.Cells(STARTING_ROW, INT_COL_FIRST_NAME) = "First Name"
         excelDoc.Cells(STARTING_ROW, INT_COL_LAST_NAME) = "Last Name"
@@ -124,6 +185,30 @@ Public Class frmToys
         excelDoc.Cells(STARTING_ROW, INT_COL_MAX_QTY) = "Max Qty"
     End Sub
 
+    '------------------------------------------------------------
+    '-             Subprogram Name: writeEmployees              -
+    '------------------------------------------------------------
+    '-                Written By: Elijah Wilson                 -
+    '-                  Written On: 04/05/2016                  -
+    '------------------------------------------------------------
+    '- Subprogram Purpose:                                      -
+    '-                                                          -
+    '- Writes all the employees and their data to the excel     -
+    '- spreadsheet                                              -
+    '------------------------------------------------------------
+    '- Parameter Dictionary (in parameter order):               -
+    '- excelDoc - The Excel.Application object to be used       -
+    '-            within the subroutine                         -
+    '- employees - A List of Employees to write to the Excel    -
+    '-             spreadsheet                                  -
+    '------------------------------------------------------------
+    '- Local Variable Dictionary (alphabetically):              -
+    '- FIRST_ROW - The first row that an employee should be     -
+    '-             written to                                   -
+    '- empl - An Employee object that is used to store the      -
+    '-        current Employee                                  -
+    '- row - What row is being written to for the employee      -
+    '------------------------------------------------------------
     Private Sub writeEmployees(ByRef excelDoc As Excel.Application, employees As List(Of Employee))
         Const FIRST_ROW As Integer = STARTING_ROW + 1
         Dim empl As Employee
@@ -138,6 +223,25 @@ Public Class frmToys
         Next
     End Sub
 
+    '------------------------------------------------------------
+    '-              Subprogram Name: writeEmployee              -
+    '------------------------------------------------------------
+    '-                Written By: Elijah Wilson                 -
+    '-                  Written On: 04/05/2016                  -
+    '------------------------------------------------------------
+    '- Subprogram Purpose:                                      -
+    '-                                                          -
+    '- Writes an employee and their data to the excel           -
+    '- spreadsheet                                              -
+    '------------------------------------------------------------
+    '- Parameter Dictionary (in parameter order):               -
+    '- row - The row number to write the Employee to            -
+    '- excelDoc - The Excel.Application to write the data to    -
+    '- empl - The Employee object to get data from              -
+    '------------------------------------------------------------
+    '- Local Variable Dictionary (alphabetically):              -
+    '- (None)                                                   -
+    '------------------------------------------------------------
     Private Sub writeEmployee(row As Integer, ByRef excelDoc As Excel.Application, empl As Employee)
         excelDoc.Cells(row, INT_COL_FIRST_NAME) = empl.firstName
         excelDoc.Cells(row, INT_COL_LAST_NAME) = empl.lastName
@@ -165,6 +269,30 @@ Public Class frmToys
         excelDoc.Cells(row, INT_COL_MAX_QTY) = String.Format(FORMULA_MAX_QTY, row)
     End Sub
 
+    '------------------------------------------------------------
+    '-           Subprogram Name: writeAggregateRows            -
+    '------------------------------------------------------------
+    '-                Written By: Elijah Wilson                 -
+    '-                  Written On: 04/05/2016                  -
+    '------------------------------------------------------------
+    '- Subprogram Purpose:                                      -
+    '-                                                          -
+    '- Writes all of the aggregate data rows about all the      -
+    '- employees.                                               -
+    '------------------------------------------------------------
+    '- Parameter Dictionary (in parameter order):               -
+    '- excelDoc - The Excel.Application to write to             -
+    '------------------------------------------------------------
+    '- Local Variable Dictionary (alphabetically):              -
+    '- FIRST_DATA_ROW - The first row with employee data        -
+    '- FIRST_ROW - The first row to write to                    -
+    '- formula - Current formula                                -
+    '- formulaRow - Current row being written to                -
+    '- functions - An array of strings containing various excel -
+    '-             functions to be used                         -
+    '- names - Function names to be used as titles for the      -
+    '-         aggregate rows                                   -
+    '------------------------------------------------------------
     Private Sub writeAggregateRows(ByRef excelDoc As Excel.Application)
         Dim FIRST_ROW As Integer = maxRowWithData + 2  ' 1 for next line, 1 for blank line
         Dim FIRST_DATA_ROW As Integer = STARTING_ROW + 1
@@ -198,15 +326,42 @@ Public Class frmToys
         Next
     End Sub
 
+    '------------------------------------------------------------
+    '-         Function Name: ColumnLetterToColumnIndex         -
+    '------------------------------------------------------------
+    '-                Written By: Elijah Wilson                 -
+    '-                  Written On: 04/05/2016                  -
+    '------------------------------------------------------------
+    '- Function Purpose:                                        -
+    '-                                                          -
+    '- Convert a letter to an integer to be used with an        -
+    '- Excel.Application's Cells property.                      -
+    '------------------------------------------------------------
+    '- Parameter Dictionary (in parameter order):               -
+    '- columnLetter - The column letter to get the index for    -
+    '------------------------------------------------------------
+    '- Local Variable Dictionary (alphabetically):              -
+    '- charA - The integer representation of the capital letter -
+    '-         A                                                -
+    '- charColLetter - The integer representation of the        -
+    '-                 current letter in the columnLetter       -
+    '- sum - The sum of addition and mulitplication for the     -
+    '-       letter                                             -
+    '------------------------------------------------------------
+    '- Returns:                                                 -
+    '- Integer - The index that can be used with                -
+    '-           Excel.Application.Cells                        -
+    '------------------------------------------------------------
     Private Shared Function ColumnLetterToColumnIndex(columnLetter As String) As Integer
         ' Inspired by: https://www.add-in-express.com/creating-addins-blog/2013/11/13/convert-excel-column-number-to-name/
         columnLetter = columnLetter.ToUpper()
         Dim sum As Integer = 0
+        Dim charA As Integer = Asc("A")
+        Dim charColLetter As Integer
 
         For i As Integer = 0 To columnLetter.Length - 1
             sum *= 26
-            Dim charA As Integer = Asc("A")
-            Dim charColLetter As Integer = Asc(columnLetter(i))
+            charColLetter = Asc(columnLetter(i))
             sum += (charColLetter - charA) + 1
         Next
 
